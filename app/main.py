@@ -39,12 +39,16 @@ def HelloWorld():
     return {"data": "Hello World !"}
 
 # endpoint to get all todos
-@app.get('/todos', response_method = List[schema.ResponseSchema])
+@app.get('/todos', response_model = List[schema.ResponseSchema])
 def getTodos(db:Session = Depends(get_db)):
     todoData = db.query(models.Todos).all()
     return todoData
 
 # create a todo
-@app.post('/create_todo')
-def CreateTodo(Todo:schema.InputSchema):
+@app.post('/create_todo', status_coude = status.HTTP_201_CREATED, response_model = schema.ResponseSchema)
+def CreateTodo(Todo:schema.InputSchema, db: Session = Depends(get_db)):
+    todoData = models.Todos(**Todo.model_dump())
+    db.add(todoData)
+    db.commit()
+    db.refresh()
     return {"status": "success!"}
