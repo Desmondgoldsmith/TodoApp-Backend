@@ -7,3 +7,9 @@ class TodoSchema(BaseModel):
     todo: str
     date_created: datetime
     expiry_date: datetime
+    
+class InputSchema(TodoSchema):
+    pass
+
+class ResponseSchema(TodoSchema):
+    pass
