@@ -12,6 +12,26 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+connection_successful = False
+
+while not connection_successful:
+    try:
+        conn = psycopg.connect(
+            host='localhost',
+            dbname='TodosDB',
+            user='postgres',
+            password='DessyAdmin',
+            port='5432',
+            row_factory=dict_row
+        )
+        cursor = conn.cursor()
+        print("Database connection successful")
+        connection_successful = True
+    except Exception as error:
+        print(f"An error occurred: {error}")
+        print("Retrying in 2 seconds...")
+        time.sleep(2)
+
 
 # test api
 @app.get('/hello')
