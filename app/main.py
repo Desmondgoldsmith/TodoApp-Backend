@@ -79,3 +79,14 @@ def deleteTodo(Todo: schema.InputSchema, db: Session = Depends(get_db)):
     deleteTodo.delete(synchronize_session = False)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)   
+
+# get one todo
+@app.get('todo/{id}', response_model= schema.ResponseSchema)
+def getOneTodo(id:int, db: Session = Depends(get_db)):
+    data = db.query(models.Todos).filter(models.Todos.id == id).first()
+    
+    # Check if the post exists
+    if data is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
+                            detail=f"Post with id {id} not found")
+    return data
