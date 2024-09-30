@@ -52,3 +52,17 @@ def CreateTodo(Todo:schema.InputSchema, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(todoData)
     return  todoData 
+
+# update todo
+@app.put('/update_todo/{id}', status_code=status.HTTP_201_CREATED, response_model = schema.ResponseSchema)
+def updateTodo(Todo: schema.InputSchema, db: Session = Depends(get_db)):
+    todoData = db.query(models.Todos).filter(models.Todos.id == id)
+    data = todoData.first()
+    
+    # Check if the post exists
+    if data is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
+                            detail=f"Post with id {id} not found")
+    
+    todoData.update(Todo.model_dump(), synchronize_session = False)
+    
