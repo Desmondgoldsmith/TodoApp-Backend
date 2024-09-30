@@ -45,7 +45,7 @@ def getTodos(db:Session = Depends(get_db)):
     return todoData
 
 # create a todo
-@app.post('/create_todo', status_coude = status.HTTP_201_CREATED, response_model = schema.ResponseSchema)
+@app.post('/create_todo', status_code = status.HTTP_201_CREATED, response_model = schema.ResponseSchema)
 def CreateTodo(Todo:schema.InputSchema, db: Session = Depends(get_db)):
     todoData = models.Todos(**Todo.model_dump())
     db.add(todoData)
