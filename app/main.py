@@ -46,16 +46,16 @@ def getTodos(db:Session = Depends(get_db)):
 
 # create a todo
 @app.post('/create_todo', status_code = status.HTTP_201_CREATED, response_model = schema.ResponseSchema)
-def CreateTodo(Todo:schema.InputSchema, db: Session = Depends(get_db)):
+def CreateTodo(Todo:schema.TodoCreate, db: Session = Depends(get_db)):
     todoData = models.Todos(**Todo.model_dump())
     db.add(todoData)
     db.commit()
     db.refresh(todoData)
-    return  todoData 
+    return todoData 
 
 # update todo
 @app.put('/update_todo/{id}', status_code=status.HTTP_201_CREATED, response_model = schema.ResponseSchema)
-def updateTodo(Todo: schema.InputSchema, db: Session = Depends(get_db)):
+def updateTodo(Todo: schema.TodoCreate, db: Session = Depends(get_db)):
     todoData = db.query(models.Todos).filter(models.Todos.id == id)
     data = todoData.first()
     
@@ -72,7 +72,7 @@ def updateTodo(Todo: schema.InputSchema, db: Session = Depends(get_db)):
 
 # delete a todo
 @app.delete('/delete_todo/{id}')
-def deleteTodo(Todo: schema.InputSchema, db: Session = Depends(get_db)):
+def deleteTodo(Todo: schema.TodoCreate, db: Session = Depends(get_db)):
     deleteTodo = db.query(models.Todos).filter(models.Todos.id == id)
     if deleteTodo.first() == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Post with id {id} not found")
