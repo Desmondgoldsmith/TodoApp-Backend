@@ -57,7 +57,7 @@ def CreateTodo(Todo:schema.TodoCreate, db: Session = Depends(get_db)):
 
 # update todo
 @app.put('/update_todo/{id}', status_code=status.HTTP_201_CREATED, response_model = schema.ResponseSchema)
-def updateTodo(Todo: schema.TodoCreate, db: Session = Depends(get_db)):
+def updateTodo(id:int, Todo: schema.TodoCreate, db: Session = Depends(get_db)):
     todoData = db.query(models.Todos).filter(models.Todos.id == id)
     data = todoData.first()
     
