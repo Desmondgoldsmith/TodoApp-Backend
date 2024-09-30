@@ -65,8 +65,7 @@ def updateTodo(id:int, Todo: schema.TodoCreate, db: Session = Depends(get_db)):
     if data is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail=f"Post with id {id} not found")
-    todoData = Todo.model_dump(exclude_unset = True)
-    todoData.update(todoData, synchronize_session = False)
+    todoData.update(Todo.model_dump(), synchronize_session = False)
     db.commit()
     db.refresh(data)
     
