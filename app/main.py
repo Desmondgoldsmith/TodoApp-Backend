@@ -6,11 +6,28 @@ from .database import engine, get_db, DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB
 from . import models, schema
 from typing import List
 import time
+from fastapi.middleware.cors import CORSMiddleware
+
 
 models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
+
+
+# Configure CORS
+origins = [
+    "http://localhost:5173",  # Vue.js default dev server
+    "http://localhost:3000",  # Just in case we use a different port
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 connection_successful = False
 
