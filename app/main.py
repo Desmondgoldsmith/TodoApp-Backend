@@ -51,6 +51,4 @@ def CreateTodo(Todo:schema.InputSchema, db: Session = Depends(get_db)):
     db.add(todoData)
     db.commit()
     db.refresh(todoData)
-    return {"status": "success!"
-            "data": todoData  
-           }
+    return  todoData 
