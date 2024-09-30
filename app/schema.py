@@ -5,7 +5,8 @@ from typing import Optional
 class TodoBase(BaseModel):
     title: str
     todo: str
-    expiry_date: datetime
+    expiry_date: Optional[datetime] = None
+
 
 class TodoCreate(TodoBase):
     pass

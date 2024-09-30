@@ -47,11 +47,13 @@ def getTodos(db:Session = Depends(get_db)):
 # create a todo
 @app.post('/create_todo', status_code = status.HTTP_201_CREATED, response_model = schema.ResponseSchema)
 def CreateTodo(Todo:schema.TodoCreate, db: Session = Depends(get_db)):
-    todoData = models.Todos(**Todo.model_dump())
-    db.add(todoData)
+    # take out the null fields
+    todo_data = Todo.model_dump(exclude_unset=True) 
+    new_todo = models.Todos(**todo_data)
+    db.add(new_todo)
     db.commit()
-    db.refresh(todoData)
-    return todoData 
+    db.refresh(new_todo)
+    return new_todo 
 
 # update todo
 @app.put('/update_todo/{id}', status_code=status.HTTP_201_CREATED, response_model = schema.ResponseSchema)
@@ -63,8 +65,8 @@ def updateTodo(Todo: schema.TodoCreate, db: Session = Depends(get_db)):
     if data is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail=f"Post with id {id} not found")
-    
-    todoData.update(Todo.model_dump(), synchronize_session = False)
+    todoData = Todo.model_dump(exclude_unset = True)
+    todoData.update(todoData, synchronize_session = False)
     db.commit()
     db.refresh(data)
     
