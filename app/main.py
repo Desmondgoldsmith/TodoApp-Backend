@@ -74,4 +74,8 @@ def updateTodo(Todo: schema.InputSchema, db: Session = Depends(get_db)):
 @app.delete('/delete_todo/{id}')
 def deleteTodo(Todo: schema.InputSchema, db: Session = Depends(get_db)):
     deleteTodo = db.query(models.Todos).filter(models.Todos.id == id)
-    
+    if deleteTodo.first() == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Post with id {id} not found")
+    deleteTodo.delete(synchronize_session = False)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)   
