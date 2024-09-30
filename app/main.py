@@ -65,4 +65,7 @@ def updateTodo(Todo: schema.InputSchema, db: Session = Depends(get_db)):
                             detail=f"Post with id {id} not found")
     
     todoData.update(Todo.model_dump(), synchronize_session = False)
+    db.commit()
+    db.refresh(data)
     
+    return data
