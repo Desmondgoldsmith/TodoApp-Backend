@@ -2,7 +2,7 @@ from fastapi import FastAPI, Response,status, HTTPException, Depends
 import psycopg
 from psycopg.rows import dict_row
 from sqlalchemy.orm import Session
-from .database import engine, get_db
+from .database import engine, get_db, DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT
 from . import models, schema
 from typing import List
 import time
@@ -17,11 +17,11 @@ connection_successful = False
 while not connection_successful:
     try:
         conn = psycopg.connect(
-            host='localhost',
-            dbname='TodosDB',
-            user='postgres',
-            password='DessyAdmin',
-            port='5432',
+            host= DB_HOST,
+            dbname= DB_NAME,
+            user= DB_USER,
+            password=DB_PASSWORD,
+            port= DB_PORT,
             row_factory=dict_row
         )
         cursor = conn.cursor()
@@ -73,7 +73,7 @@ def updateTodo(id:int, Todo: schema.TodoCreate, db: Session = Depends(get_db)):
 
 # delete a todo
 @app.delete('/delete_todo/{id}')
-def deleteTodo(Todo: schema.TodoCreate, db: Session = Depends(get_db)):
+def deleteTodo(id:int, db: Session = Depends(get_db)):
     deleteTodo = db.query(models.Todos).filter(models.Todos.id == id)
     if deleteTodo.first() == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Post with id {id} not found")
