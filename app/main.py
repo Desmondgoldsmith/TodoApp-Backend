@@ -69,3 +69,9 @@ def updateTodo(Todo: schema.InputSchema, db: Session = Depends(get_db)):
     db.refresh(data)
     
     return data
+
+# delete a todo
+@app.delete('/delete_todo/{id}')
+def deleteTodo(Todo: schema.InputSchema, db: Session = Depends(get_db)):
+    deleteTodo = db.query(models.Todos).filter(models.Todos.id == id)
+    
