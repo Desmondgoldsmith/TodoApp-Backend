@@ -12,11 +12,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Test database configuration
-TEST_DB_HOST = os.getenv("TEST_DB_HOST", "localhost")
-TEST_DB_NAME = os.getenv("TEST_DB_NAME", "test_todos_db")
-TEST_DB_USER = os.getenv("TEST_DB_USER", "postgres")
-TEST_DB_PASSWORD = os.getenv("TEST_DB_PASSWORD", "your_password")
-TEST_DB_PORT = os.getenv("TEST_DB_PORT", "5432")
+TEST_DB_HOST = os.getenv("TEST_DB_HOST")
+TEST_DB_NAME = os.getenv("TEST_DB_NAME")
+TEST_DB_USER = os.getenv("TEST_DB_USER")
+TEST_DB_PASSWORD = os.getenv("TEST_DB_PASSWORD")
+TEST_DB_PORT = os.getenv("TEST_DB_PORT")
 
 # Create a test database URL
 TEST_DATABASE_URL = f"postgresql+asyncpg://{TEST_DB_USER}:{TEST_DB_PASSWORD}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}"
