@@ -10,7 +10,12 @@ REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 REDIS_DB = int(os.getenv("REDIS_DB", 0))
 
-redis = Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
-
 def init_redis(app):
-    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    try:
+        redis = Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
+        redis.ping()  # Test the connection
+        FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+        print("Redis connection successful")
+    except Exception as e:
+        print(f"Error connecting to Redis: {e}")
+        print("Caching will be disabled")

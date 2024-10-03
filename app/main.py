@@ -17,8 +17,8 @@ app = FastAPI()
 
 # Configure CORS
 origins = [
-    "http://localhost:5173",  # Vue.js default dev server
-    "http://localhost:3000",  # Just in case we use a different port
+    "http://localhost:5173",
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
@@ -50,65 +50,56 @@ while not connection_successful:
         time.sleep(2)
 
 @app.on_event("startup")
-async def startup():
+async def startup_event():
     init_redis(app)
 
-# test api
 @app.get('/hello')
-@cache(expire=60)
 def HelloWorld():
     return {"data": "Hello World !"}
 
-# endpoint to get all todos
 @app.get('/todos', response_model=List[schema.ResponseSchema])
-@cache(expire=30)
+@cache(expire=60)  # Cache for 60 seconds
 def getTodos(db: Session = Depends(get_db)):
     todoData = db.query(models.Todos).all()
     return todoData
 
-# create a todo
 @app.post('/create_todo', status_code=status.HTTP_201_CREATED, response_model=schema.ResponseSchema)
-async def CreateTodo(Todo: schema.TodoCreate, db: Session = Depends(get_db)):
+def CreateTodo(Todo: schema.TodoCreate, db: Session = Depends(get_db)):
     todo_data = Todo.model_dump(exclude_unset=True)
     new_todo = models.Todos(**todo_data)
     db.add(new_todo)
     db.commit()
     db.refresh(new_todo)
-    await FastAPICache.clear(namespace="todos")
+    FastAPICache.clear(namespace="todos")  # Clear cache after creating
     return new_todo
 
-# update todo
 @app.put('/update_todo/{id}', status_code=status.HTTP_201_CREATED, response_model=schema.ResponseSchema)
-async def updateTodo(id: int, Todo: schema.TodoCreate, db: Session = Depends(get_db)):
+def updateTodo(id: int, Todo: schema.TodoCreate, db: Session = Depends(get_db)):
     todoData = db.query(models.Todos).filter(models.Todos.id == id)
     data = todoData.first()
-    
     if data is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail=f"Post with id {id} not found")
     todoData.update(Todo.model_dump(), synchronize_session=False)
     db.commit()
     db.refresh(data)
-    await FastAPICache.clear(namespace="todos")
+    FastAPICache.clear(namespace="todos")  # Clear cache after updating
     return data
 
-# delete a todo
 @app.delete('/delete_todo/{id}')
-async def deleteTodo(id: int, db: Session = Depends(get_db)):
+def deleteTodo(id: int, db: Session = Depends(get_db)):
     deleteTodo = db.query(models.Todos).filter(models.Todos.id == id)
     if deleteTodo.first() == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {id} not found")
     deleteTodo.delete(synchronize_session=False)
     db.commit()
-    await FastAPICache.clear(namespace="todos")
+    FastAPICache.clear(namespace="todos")  # Clear cache after deleting
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-# get one todo
-@app.get('todo/{id}', response_model=schema.ResponseSchema)
-@cache(expire=30)
+@app.get('/todo/{id}', response_model=schema.ResponseSchema)
+@cache(expire=60)  # Cache for 60 seconds
 def getOneTodo(id: int, db: Session = Depends(get_db)):
     data = db.query(models.Todos).filter(models.Todos.id == id).first()
-    
     if data is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail=f"Post with id {id} not found")
