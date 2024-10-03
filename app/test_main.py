@@ -57,13 +57,12 @@ async def test_client():
 async def test_create_todo(create_test_database, test_client):
     response = await test_client.post(
         "/create_todo",
-        json={"title": "Test Todo", "description": "This is a test todo", "completed": False}
+        json={"title": "Test Todo", "todo": "This is a test todo"}
     )
     assert response.status_code == 201
     data = response.json()
     assert data["title"] == "Test Todo"
-    assert data["description"] == "This is a test todo"
-    assert data["completed"] == False
+    assert data["todo"] == "This is a test todo"
     assert "id" in data
 
 @pytest.mark.asyncio
@@ -79,7 +78,7 @@ async def test_get_one_todo(create_test_database, test_client):
     # First, create a todo
     create_response = await test_client.post(
         "/create_todo",
-        json={"title": "Test Todo", "description": "This is a test todo", "completed": False}
+        json={"title": "Test Todo", "todo": "This is a test todo"}
     )
     created_todo = create_response.json()
 
@@ -95,14 +94,14 @@ async def test_update_todo(create_test_database, test_client):
     # First, create a todo
     create_response = await test_client.post(
         "/create_todo",
-        json={"title": "Test Todo", "description": "This is a test todo", "completed": False}
+        json={"title": "Test Todo", "todo": "This is a test todo"}
     )
     created_todo = create_response.json()
 
     # Now, update the todo
     update_response = await test_client.put(
         f"/update_todo/{created_todo['id']}",
-        json={"title": "Updated Todo", "description": "This is an updated todo", "completed": True}
+        json={"title": "Updated Todo", "todo": "This is an updated todo"}
     )
     assert update_response.status_code == 201
     updated_todo = update_response.json()
@@ -115,7 +114,7 @@ async def test_delete_todo(create_test_database, test_client):
     # First, create a todo
     create_response = await test_client.post(
         "/create_todo",
-        json={"title": "Test Todo", "description": "This is a test todo", "completed": False}
+        json={"title": "Test Todo", "todo": "This is a test todo"}
     )
     created_todo = create_response.json()
 
